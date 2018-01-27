@@ -86,7 +86,7 @@ The beatings shall continue until estimators improve.
 
 (a) Copy and pasting... I mean... setting up the simulation.
 
-```{r simulation}
+```{r simulation, cache=TRUE}
 #### Simulation code for Methods 3
 
 ### This file includes the code for simulating simple random samples
@@ -102,31 +102,67 @@ n = 25000 #set to desired sample size
 #make population data  -- let's use a binary outcome with p = 0.2, which we can quickly generate using rbinom
 popdata = rbinom(N, 1, p = 0.2)  
 
-#start the simulation loop
-for(j in 1:T){
-  
-  #randomly sample from the population
-  index = sample(1:N, n, replace = FALSE)  #this samples n values between 1 and N, which can be used as the   rows in "popdata" selected for the random sample 
-  
-  #peel off the sampled rows to make the sample
-  sampdata = popdata[index]
-  
-  #estimates
-  ybar = mean(sampdata)
-  rightvar = (1 - n/N)*var(sampdata)/n
-  wrongvar = var(sampdata)/n
-  
-  output[j,] = c(sampavg = ybar, varwithfpc = rightvar, varnofpc = wrongvar)
-}
-
+run.cores = parallel::detectCores()/2
+set.seed(2018)
+res = parallel::mclapply(1:T, 
+                         function(j){
+                           sampdata = popdata[sample(1:N, n, replace = FALSE)]
+                           ybar = mean(sampdata)
+                           varWithFPC = (1 - n/N)*var(sampdata)/n
+                           varNoFPC = var(sampdata)/n
+                           return(list("ybar" = ybar, 
+                                       "varWithFPC" = varWithFPC, 
+                                       "varNoFPC" = varNoFPC))
+                         },
+                         mc.cores = run.cores)
+output = data.frame(t(matrix(unlist(res), nrow = 3, ncol = T)))
 #you can look at the mean and variance of the columns in the output to answer the questions in Methods 3
 #note: one could code this far more efficiently, but I wanted to lay out all the details
 means = apply(output, 2, mean)
 knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
              col.names = c("average y_bar", "var(y_bar)", 
                            "average corrected variance", "average vanilla variance"),
-             caption = "Comparison of corrected and uncorrected variance for a finite population")
-```
+             caption = "Comparison of corrected and uncorrected variance (n = 25,000)")
+```  
 
 
+(b) We see from the results of part (a) that the estimated variance with finite population correction is closer on average to the variance of the sample mean than is the uncorrected estimated variance. We conclude that the finite population correction is important to obtain an accurate estimate for the variance of the sample mean, given these sample and population sizes.  
+
+(c) Copy. Paste. Profit.
+
+```{r}
+T = 10000 #this is the number of simulation runs.
+output = matrix(nrow = T, ncol = 3)   #this is where we store the output.  Need to define before you start the loop.
+
+N = 100000  #set to desired population size
+n = 500 #set to desired sample size
+
+#make population data  -- let's use a binary outcome with p = 0.2, which we can quickly generate using rbinom
+popdata = rbinom(N, 1, p = 0.2)  
+
+run.cores = parallel::detectCores()/2
+set.seed(2018)
+res = parallel::mclapply(1:T, 
+                         function(j){
+                           sampdata = popdata[sample(1:N, n, replace = FALSE)]
+                           ybar = mean(sampdata)
+                           varWithFPC = (1 - n/N)*var(sampdata)/n
+                           varNoFPC = var(sampdata)/n
+                           return(list("ybar" = ybar, 
+                                       "varWithFPC" = varWithFPC, 
+                                       "varNoFPC" = varNoFPC))
+                         },
+                         mc.cores = run.cores)
+output = data.frame(t(matrix(unlist(res), nrow = 3, ncol = T)))
+#you can look at the mean and variance of the columns in the output to answer the questions in Methods 3
+#note: one could code this far more efficiently, but I wanted to lay out all the details
+means = apply(output, 2, mean)
+knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
+             col.names = c("average y_bar", "var(y_bar)", 
+                           "average corrected variance", "average vanilla variance"),
+             caption = "Comparison of corrected and uncorrected variance (n = 500)")
+```  
+
+
+Using the finite population correction with these sample and population sizes does not seem to be necessary. This empirical result aligns with what we would expect from intuition. The finite population correction is only $1-n/N = $ `r 1-n/N`, not much of a change. 
 
