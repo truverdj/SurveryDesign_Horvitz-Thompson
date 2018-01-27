@@ -164,5 +164,7 @@ knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
 ```  
 
 
-Using the finite population correction with these sample and population sizes does not seem to be necessary. This empirical result aligns with what we would expect from intuition. The finite population correction is only $1-n/N = $ `r 1-n/N`, not much of a change. 
+Using the finite population correction with these sample and population sizes does not seem to be necessary. This empirical result aligns with what we would expect from intuition. The finite population correction is only $1-n/N = $ `r 1-n/N`, not much of a change.   
+
+##### (5) Challenge Accepted
 
