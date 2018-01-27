@@ -1,0 +1,63 @@
+---
+title: "STA 522 HW3 (Chapter 2 & Horvitz-Thompson)"
+author: "Daniel Truver"
+date: "1/25/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##### (1) SRS Design Precision  
+
+From Lohr, we know the formula for variance to be
+
+$$
+Var(\bar{y}) = \frac{S^2}{n}\left(  1-\frac{n}{N} \right)
+$$
+
+If we are very lucky, or very generous with our assumptions, and $S^2$ is the same for all given populations, then we have a straightforward means of comparing variances.
+
+$$
+\begin{aligned}
+& Var(\bar{y}_1) = \frac{S^2}{400}\left(  1-\frac{400}{4000} \right) = \frac{9S^2}{4000} \\
+& Var(\bar{y}_2) = \frac{S^2}{30}\left(  1-\frac{30}{300} \right) = \frac{3S^2}{100} \\
+& Var(\bar{y}_3) = \frac{S^2}{3000}\left(  1-\frac{3000}{300{,}000{,}000} \right) = \frac{0.99999S^2}{3000}
+\end{aligned}
+$$ 
+
+Of these, the third sample has the lowest variance and therefore the highest precision. Even though the proportion of the population sampled is lowest here, the pure size of the sample is really the deciding factor. This result aligns with our intuition about sampling.  
+
+##### (2) SRSWR  
+
+(a) The event that we select $k$ at least one time is the complement of the event that we never select $k$.
+$$
+\pi_k = Pr(I_k = 1) = 1 - Pr(I_k =0) =1 - Pr(k \text{ is never selected}) = 1-(1-p_k)^n
+$$
+
+(b) 
+$$
+\hat{t}_y = \sum_{i\in S}y_k/\pi_i = \sum_{i\in S} \frac{y_i}{1-(1-p_i)^n}
+$$
+
+(c) We unfortunately want to find the expression for $Pr(I_k = 1, I_l = 1); k\neq l$. This is the complement of ($k$ never selected) $\cup$ ($l$ never selected).
+$$
+\begin{aligned}
+\pi_{ik} 
+&= Pr(I_k = 1, I_l = 1) \\
+&= 1 - (Pr(k \text{ unselected}) + Pr(l \text{ unselected}) - Pr(k \text{ unselected} \cap l \text{ unselected})) \\
+&= 1 - (1-p_k)^n - (1-p_l)^n + (1-(p_k + p_l))^n 
+\end{aligned}
+$$
+
+as was to be shown.  
+
+(d) Oh dear, notation hell closes in.
+$$
+\begin{aligned}
+\hat{Var}(\hat{t_y}) 
+&= \sum_{i\in S} \left(\frac{y_i}{\pi_i} \right)(1-\pi_i) + 2\sum_{i<j\in S}\frac{y_iy_j}{\pi_i\pi_j\pi_{ij}}(\pi_{ij}-\pi_i\pi_j) \\
+&= 
+\end{aligned}
+$$
