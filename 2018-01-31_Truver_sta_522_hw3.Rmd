@@ -53,11 +53,32 @@ $$
 
 as was to be shown.  
 
-(d) Oh dear, notation hell closes in.
+(d) Oh dear, parantheses hell closes in.
 $$
 \begin{aligned}
 \hat{Var}(\hat{t_y}) 
-&= \sum_{i\in S} \left(\frac{y_i}{\pi_i} \right)(1-\pi_i) + 2\sum_{i<j\in S}\frac{y_iy_j}{\pi_i\pi_j\pi_{ij}}(\pi_{ij}-\pi_i\pi_j) \\
-&= 
+&= \sum_{i\in S} \left(\frac{y_i}{\pi_i} \right)^2(1-\pi_i) + 2\sum_{i<j\in S}\frac{y_iy_j}{\pi_i\pi_j\pi_{ij}}(\pi_{ij}-\pi_i\pi_j) \\
+&= \sum_{i\in S}\left(\frac{y_i}{1-(1-p_i)^n}  \right)^2(1-p_i)^n\\ 
+&+ 2\sum_{i<j\in S} \frac{y_iy_j}{[1-(1-p_i)^n]\cdot[1-(1-p_j)^n]\cdot[1 - (1-p_k)^n - (1-p_l)^n + (1-(p_k + p_l))^n]}\\
+&\cdot\Big(1 - (1-p_k)^n - (1-p_l)^n + (1-(p_k + p_l)^n - (1-(1-p_i)^n)\cdot(1-(1-p_j)^n)\Big)
 \end{aligned}
 $$
+
+##### (3) SRSWR (incompetent friend version)
+
+(a/b) Following the derivation, we will proceed to beat our friend about the head and shoulders with this rolled up paper. 
+
+$$
+\begin{aligned}
+E(\tilde{t_y}) 
+&= E\left( \sum_{k \in S}y_k/p_k \right) \\
+&= E\left(\sum_{k=1}^N \frac{y_k}{p_k}I_k  \right) \\
+&= \sum_{k=1}^N\frac{y_k}{p_k}E(I_k) \\
+&= \sum_{k=1}^N\frac{y_k}{p_k}(1-(1-p_k)^n) \\
+&\implies \\
+&\text{Bias}(\tilde{t_y}) = \left(\sum_{k=1}^N\frac{y_k}{p_k}(1-(1-p_k)^n)\right) - t_y
+\end{aligned}
+$$  
+
+The beatings shall continue until estimators improve.   
+
