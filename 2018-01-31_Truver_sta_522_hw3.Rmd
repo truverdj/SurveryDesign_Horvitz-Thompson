@@ -82,3 +82,51 @@ $$
 
 The beatings shall continue until estimators improve.   
 
+##### (4) Simulation 
+
+(a) Copy and pasting... I mean... setting up the simulation.
+
+```{r simulation}
+#### Simulation code for Methods 3
+
+### This file includes the code for simulating simple random samples
+### It is used on Methods 3.
+
+
+T = 10000 #this is the number of simulation runs.
+output = matrix(nrow = T, ncol = 3)   #this is where we store the output.  Need to define before you start the loop.
+
+N = 100000  #set to desired population size
+n = 25000 #set to desired sample size
+
+#make population data  -- let's use a binary outcome with p = 0.2, which we can quickly generate using rbinom
+popdata = rbinom(N, 1, p = 0.2)  
+
+#start the simulation loop
+for(j in 1:T){
+  
+  #randomly sample from the population
+  index = sample(1:N, n, replace = FALSE)  #this samples n values between 1 and N, which can be used as the   rows in "popdata" selected for the random sample 
+  
+  #peel off the sampled rows to make the sample
+  sampdata = popdata[index]
+  
+  #estimates
+  ybar = mean(sampdata)
+  rightvar = (1 - n/N)*var(sampdata)/n
+  wrongvar = var(sampdata)/n
+  
+  output[j,] = c(sampavg = ybar, varwithfpc = rightvar, varnofpc = wrongvar)
+}
+
+#you can look at the mean and variance of the columns in the output to answer the questions in Methods 3
+#note: one could code this far more efficiently, but I wanted to lay out all the details
+means = apply(output, 2, mean)
+knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
+             col.names = c("average y_bar", "var(y_bar)", 
+                           "average corrected variance", "average vanilla variance"),
+             caption = "Comparison of corrected and uncorrected variance for a finite population")
+```
+
+
+
