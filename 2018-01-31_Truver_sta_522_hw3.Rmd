@@ -47,6 +47,7 @@ $$
 \pi_{ik} 
 &= Pr(I_k = 1, I_l = 1) \\
 &= 1 - (Pr(k \text{ unselected}) + Pr(l \text{ unselected}) - Pr(k \text{ unselected} \cap l \text{ unselected})) \\
+&= 1 - (Pr(k \text{ unselected}) + Pr(l \text{ unselected}) - (1-Pr(k \text{ selected} \cup l \text{ selected}))^n) \\
 &= 1 - (1-p_k)^n - (1-p_l)^n + (1-(p_k + p_l))^n 
 \end{aligned}
 $$
@@ -89,17 +90,14 @@ The beatings shall continue until estimators improve.
 ```{r simulation, cache=TRUE}
 #### Simulation code for Methods 3
 
-### This file includes the code for simulating simple random samples
-### It is used on Methods 3.
-
 
 T = 10000 #this is the number of simulation runs.
-output = matrix(nrow = T, ncol = 3)   #this is where we store the output.  Need to define before you start the loop.
+output = matrix(nrow = T, ncol = 3)   #this is where we store the output.  
 
 N = 100000  #set to desired population size
 n = 25000 #set to desired sample size
 
-#make population data  -- let's use a binary outcome with p = 0.2, which we can quickly generate using rbinom
+#make population data  -- let's use a binary outcome with p = 0.2
 popdata = rbinom(N, 1, p = 0.2)  
 
 run.cores = parallel::detectCores()/2
@@ -116,8 +114,6 @@ res = parallel::mclapply(1:T,
                          },
                          mc.cores = run.cores)
 output = data.frame(t(matrix(unlist(res), nrow = 3, ncol = T)))
-#you can look at the mean and variance of the columns in the output to answer the questions in Methods 3
-#note: one could code this far more efficiently, but I wanted to lay out all the details
 means = apply(output, 2, mean)
 knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
              col.names = c("average y_bar", "var(y_bar)", 
@@ -132,12 +128,12 @@ knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
 
 ```{r}
 T = 10000 #this is the number of simulation runs.
-output = matrix(nrow = T, ncol = 3)   #this is where we store the output.  Need to define before you start the loop.
+output = matrix(nrow = T, ncol = 3)  
 
 N = 100000  #set to desired population size
 n = 500 #set to desired sample size
 
-#make population data  -- let's use a binary outcome with p = 0.2, which we can quickly generate using rbinom
+#make population data  -- let's use a binary outcome with p = 0.2
 popdata = rbinom(N, 1, p = 0.2)  
 
 run.cores = parallel::detectCores()/2
@@ -154,8 +150,6 @@ res = parallel::mclapply(1:T,
                          },
                          mc.cores = run.cores)
 output = data.frame(t(matrix(unlist(res), nrow = 3, ncol = T)))
-#you can look at the mean and variance of the columns in the output to answer the questions in Methods 3
-#note: one could code this far more efficiently, but I wanted to lay out all the details
 means = apply(output, 2, mean)
 knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
              col.names = c("average y_bar", "var(y_bar)", 
@@ -166,5 +160,4 @@ knitr::kable(data.frame(means[1], var(output[,1]), means[2], means[3]),
 
 Using the finite population correction with these sample and population sizes does not seem to be necessary. This empirical result aligns with what we would expect from intuition. The finite population correction is only $1-n/N = $ `r 1-n/N`, not much of a change.   
 
-##### (5) Challenge Accepted
 
